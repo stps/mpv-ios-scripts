@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+PREFIX="${COMMON_OPTIONS%% *}"
+PREFIX="${PREFIX##*=}"
+
+UCHARDET_OPTIONS="-DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=false -DCMAKE_OSX_SYSROOT=$SDKPATH"
+
+cmake $SRC/uchardet*
+cmake $SRC/uchardet* $UCHARDET_OPTIONS && make
+make install

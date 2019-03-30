@@ -1,0 +1,43 @@
+#!/bin/sh
+set -e
+
+FFMPEG_OPTIONS="${COMMON_OPTIONS%% *} \
+		--enable-cross-compile \
+		--disable-lzma \
+		--disable-securetransport \
+		--disable-debug \
+		--disable-programs \
+		--disable-doc \
+		--enable-pic \
+		--enable-shared"
+
+if [[ ! `which gas-preprocessor.pl` ]]; then
+	curl -L https://github.com/libav/gas-preprocessor/raw/master/gas-preprocessor.pl -o /usr/local/bin/gas-preprocessor.pl \
+		&& chmod +x /usr/local/bin/gas-preprocessor.pl
+fi
+
+if [[ "$ARCH" = "arm64" ]]; then
+	EXPORT="GASPP_FIX_XCODE5=1"
+	PLATFORM="iPhoneOS"
+elif [[ "$ARCH" = "x86_64" ]]; then
+	PLATFORM="iPhoneSimulator"
+fi
+
+XCRUN_SDK=`echo $PLATFORM | tr '[:upper:]' '[:lower:]'`
+CC="xcrun -sdk $XCRUN_SDK clang"
+
+if [[ "$ARCH" = "arm64" ]]; then
+	AS="gas-preprocessor.pl -arch aarch64 -- $CC"
+else
+	AS="gas-preprocessor.pl -- $CC"
+fi
+
+
+$SRC/ffmpeg*/configure $FFMPEG_OPTIONS \
+		--target-os=darwin \
+		--arch=$ARCH \
+		--cc="$CC" \
+		--as="$AS" \
+		--extra-cflags="$CFLAGS"
+
+make -j4 install $EXPORT

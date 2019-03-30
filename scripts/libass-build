@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+OPT="--disable-fontconfig \
+	--disable-require-system-font-provider \
+	--enable-directwrite"
+
+$SRC/libass*/configure $COMMON_OPTIONS $OPT
+							
+make install

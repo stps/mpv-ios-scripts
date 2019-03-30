@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+OPTS="--prefix=$SCRATCH/$ARCH \
+	--exec-prefix=$SCRATCH/$ARCH \
+	--disable-cplayer \
+	--disable-lcms2 \
+	--disable-lua \
+	--enable-libmpv-static \
+	--enable-ios-gl \
+	--enable-gl \
+	--disable-javascript \
+	--disable-libbluray \
+	--disable-vapoursynth \
+	--enable-uchardet \
+	--enable-lgpl"
+
+if [[ "$ENVIRONMENT" = "development" ]]; then
+	OPTS="$OPTS --disable-optimize"
+fi
+
+cd $SRC/mpv*
+./bootstrap.py
+./waf configure $OPTS
+./waf build -j4

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+$SRC/fribidi*/configure $COMMON_OPTIONS
+make install

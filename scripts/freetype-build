@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+$SRC/freetype*/configure $COMMON_OPTIONS \
+							--with-zlib=yes \
+							--without-png \
+							--with-bzip2=no \
+							--with-harfbuzz=no
+make install

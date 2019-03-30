@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+$SRC/harfbuzz*/configure $COMMON_OPTIONS \
+							--with-icu=no \
+							--with-glib=no \
+							--with-fontconfig=no \
+							--with-coretext=no \
+							--with-freetype=yes \
+							--with-cairo=no
+make install
