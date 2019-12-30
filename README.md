@@ -15,8 +15,8 @@ Currently used to help build [Outplayer](http://get.outplayer.app) on iOS.
 
 Tested with:
 
-* macOS 10.14.4
-* Xcode 10.2
+* macOS 10.14.6
+* Xcode 10.3
 
 ## Usage
 
