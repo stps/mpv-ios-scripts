@@ -1,3 +1,3 @@
 #!/bin/sh -e
 
-rm -rf downloads src scratch lib
+rm -rf downloads src scratch lib dylib
