@@ -6,6 +6,7 @@ OPTS="--prefix=$SCRATCH/$ARCH \
 	--disable-cplayer \
 	--disable-lcms2 \
 	--disable-lua \
+	--disable-libplacebo \
 	--disable-rubberband \
 	--disable-zimg \
 	--enable-libmpv-static \
