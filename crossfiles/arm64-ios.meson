@@ -1,0 +1,12 @@
+[binaries]
+c = 'clang'
+cpp = 'clang'
+ar = 'ar'
+strip = 'strip'
+pkgconfig = 'pkg-config'
+
+[host_machine]
+system = 'darwin'
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+endian = 'little'

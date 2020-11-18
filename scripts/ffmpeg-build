@@ -3,6 +3,7 @@ set -e
 
 FFMPEG_OPTIONS="${COMMON_OPTIONS%% *} \
 		--enable-cross-compile \
+		--enable-libdav1d \
 		--disable-lzma \
 		--enable-securetransport \
 		--disable-sdl2 \
@@ -18,7 +19,6 @@ if [[ ! `which gas-preprocessor.pl` ]]; then
 fi
 
 if [[ "$ARCH" = "arm64" ]]; then
-	EXPORT="GASPP_FIX_XCODE5=1"
 	PLATFORM="iPhoneOS"
 elif [[ "$ARCH" = "x86_64" ]]; then
 	PLATFORM="iPhoneSimulator"

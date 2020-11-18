@@ -3,7 +3,8 @@ set -e
 
 OPT="--disable-fontconfig \
 	--disable-require-system-font-provider \
-	--enable-directwrite"
+	--enable-directwrite \
+	--disable-asm"
 
 $SRC/libass*/configure $COMMON_OPTIONS $OPT
 							

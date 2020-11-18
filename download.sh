@@ -1,16 +1,18 @@
 #!/bin/sh -e
 
 # Change to preferred versions
-MPV_VERSION="ios"
-FFMPEG_VERSION="4.1"
-LIBASS_VERSION="0.14.0"
+MPV_VERSION="0.33.0"
+FFMPEG_VERSION="4.3.1"
+DAV1D_VERSION="master"
+LIBASS_VERSION="0.15.0"
 FREETYPE_VERSION="2.10.0"
 HARFBUZZ_VERSION="2.6.4"
 FRIBIDI_VERSION="1.0.8"
 UCHARDET_VERSION="0.0.6"
 
-MPV_URL="https://github.com/stps/mpv/archive/$MPV_VERSION.tar.gz"
+MPV_URL="https://github.com/mpv-player/mpv/archive/v$MPV_VERSION.tar.gz"
 FFMPEG_URL="http://www.ffmpeg.org/releases/ffmpeg-$FFMPEG_VERSION.tar.bz2"
+DAV1D_URL="https://code.videolan.org/videolan/dav1d/-/archive/$DAV1D_VERSION/dav1d-$DAV1D_VERSION.tar.gz"
 LIBASS_URL="https://github.com/libass/libass/releases/download/$LIBASS_VERSION/libass-$LIBASS_VERSION.tar.gz"
 FREETYPE_URL="https://sourceforge.net/projects/freetype/files/freetype2/$FREETYPE_VERSION/freetype-$FREETYPE_VERSION.tar.bz2"
 HARFBUZZ_URL="https://www.freedesktop.org/software/harfbuzz/release/harfbuzz-$HARFBUZZ_VERSION.tar.xz"
@@ -19,7 +21,7 @@ UCHARDET_URL="https://www.freedesktop.org/software/uchardet/releases/uchardet-$U
 
 rm -rf src
 mkdir -p src downloads
-for URL in $UCHARDET_URL $FREETYPE_URL $HARFBUZZ_URL $FRIBIDI_URL $LIBASS_URL $FFMPEG_URL $MPV_URL; do
+for URL in $MPV_URL $FFMPEG_URL $DAV1D_URL $LIBASS_URL $FREETYPE_URL $HARFBUZZ_URL $FRIBIDI_URL $UCHARDET_URL; do
 	TARNAME=${URL##*/}
     if [ ! -f "downloads/$TARNAME" ]; then
 	    curl -f -L -- $URL > downloads/$TARNAME
@@ -27,9 +29,11 @@ for URL in $UCHARDET_URL $FREETYPE_URL $HARFBUZZ_URL $FRIBIDI_URL $LIBASS_URL $F
     echo "$TARNAME"
     tar xvf downloads/$TARNAME -C src
 done
+rm -rf downloads
 
 echo "\033[1;32mDownloaded: \033[0m\n mpv: $MPV_VERSION \
                             \n FFmpeg: $FFMPEG_VERSION \
+                            \n dav1d: $DAV1D_VERSION \
                             \n libass: $LIBASS_VERSION \
                             \n freetype: $FREETYPE_VERSION \
                             \n harfbuzz: $HARFBUZZ_VERSION \

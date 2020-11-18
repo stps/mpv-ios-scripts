@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-LIBRARIES="libuchardet libfreetype libharfbuzz libass"
+LIBRARIES="libuchardet libdav1d libfreetype libharfbuzz libass"
 # LGPL licensed projects should be built as dynamic framework bundles
 FRAMEWORKS="libfribidi ffmpeg libmpv"
 
@@ -11,6 +11,9 @@ export CXXFLAGS
 export COMMON_OPTIONS
 export ENVIRONMENT
 export ARCH
+export SCRATCH
+export SRC
+export CROSSFILES
 
 while getopts "e:" OPTION; do
 case $OPTION in
@@ -25,7 +28,7 @@ case $OPTION in
 done
 
 export PATH="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/:$PATH"
-DEPLOYMENT_TARGET="11.0"
+DEPLOYMENT_TARGET="13.0"
 
 if [[ "$ENVIRONMENT" = "distribution" ]]; then
     ARCHS="arm64"
@@ -44,7 +47,8 @@ SCRIPTS="$ROOT/scripts"
 DYLIB="$ROOT/dylib"
 SCRATCH="$ROOT/scratch"
 LIB="$ROOT/lib"
-export SRC="$ROOT/src"
+SRC="$ROOT/src"
+CROSSFILES="$ROOT/crossfiles"
 mkdir -p $LIB $DYLIB
 
 for ARCH in $ARCHS; do
@@ -92,6 +96,9 @@ for ARCH in $ARCHS; do
             "libuchardet" )
 				mkdir -p $SCRATCH/$ARCH/uchardet && cd $_ && $SCRIPTS/uchardet-build
 				;;
+            "libdav1d" )
+				mkdir -p $SCRATCH/$ARCH/dav1d && cd $_ && $SCRIPTS/dav1d-build
+				;;
         esac
     done
 
@@ -131,7 +138,7 @@ if [[ "$ENVIRONMENT" = "development" ]]; then
     export FFMPEG_SCRATCH="$SCRATCH/arm64/ffmpeg"
     # Duplicate symbols workaround
     rm -f $FFMPEG_SCRATCH/libavfilter/log2_tab.o $FFMPEG_SCRATCH/libavdevice/reverse.o $FFMPEG_SCRATCH/libavformat/log2_tab.o $FFMPEG_SCRATCH/libswscale/log2_tab.o $FFMPEG_SCRATCH/libavcodec/reverse.o $FFMPEG_SCRATCH/libavformat/golomb_tab.o $FFMPEG_SCRATCH/libavcodec/log2_tab.o $FFMPEG_SCRATCH/libswresample/log2_tab.o
-    g++ -dynamiclib -install_name @rpath/libffmpeg.framework/libffmpeg -arch arm64 -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -g2 -Og -framework videotoolbox -framework avfoundation -framework corevideo -framework corefoundation -framework audiotoolbox -framework coremedia -framework foundation -framework security -lz -lbz2 -liconv $(find $FFMPEG_SCRATCH -name "*.o") -o $SCRATCH/arm64/lib/libffmpeg
+    g++ -dynamiclib -install_name @rpath/libffmpeg.framework/libffmpeg -arch arm64 -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -g2 -Og -framework videotoolbox -framework avfoundation -framework corevideo -framework corefoundation -framework audiotoolbox -framework coremedia -framework foundation -framework security -lz -lbz2 -liconv $SCRATCH/arm64/lib/libdav1d.a $(find $FFMPEG_SCRATCH -name "*.o") -o $SCRATCH/arm64/lib/libffmpeg
 
     export MPV_SCRATCH="$SCRATCH/arm64/mpv"
     g++ -dynamiclib -install_name @rpath/libmpv.framework/libmpv -arch arm64 -all_load -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -g2 -Og $SCRATCH/arm64/lib/libass.a $SCRATCH/arm64/lib/libfreetype.a $SCRATCH/arm64/lib/libharfbuzz.a $SCRATCH/arm64/lib/libuchardet.a $SCRATCH/arm64/lib/libffmpeg $SCRATCH/arm64/lib/libfribidi -framework foundation -framework audiotoolbox -framework coretext -framework avfoundation -framework corevideo -framework opengles -lz -lbz2 -liconv $MPV_SCRATCH/libmpv.a -o $SCRATCH/arm64/lib/libmpv
@@ -147,7 +154,7 @@ if [[ "$ENVIRONMENT" = "development" ]]; then
     export FFMPEG_SCRATCH="$SCRATCH/x86_64/ffmpeg"
     # Duplicate symbols workaround
     rm -f $FFMPEG_SCRATCH/libavfilter/log2_tab.o $FFMPEG_SCRATCH/libavdevice/reverse.o $FFMPEG_SCRATCH/libavformat/log2_tab.o $FFMPEG_SCRATCH/libswscale/log2_tab.o $FFMPEG_SCRATCH/libavcodec/reverse.o $FFMPEG_SCRATCH/libavformat/golomb_tab.o $FFMPEG_SCRATCH/libavcodec/log2_tab.o $FFMPEG_SCRATCH/libswresample/log2_tab.o
-    g++ -dynamiclib -install_name @rpath/libffmpeg.framework/libffmpeg -arch x86_64 -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -g2 -Og -framework videotoolbox -framework avfoundation -framework corevideo -framework corefoundation -framework audiotoolbox -framework coremedia -framework foundation -framework security -lz -lbz2 -liconv $(find $FFMPEG_SCRATCH -name "*.o") -o $SCRATCH/x86_64/lib/libffmpeg
+    g++ -dynamiclib -install_name @rpath/libffmpeg.framework/libffmpeg -arch x86_64 -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -g2 -Og -framework videotoolbox -framework avfoundation -framework corevideo -framework corefoundation -framework audiotoolbox -framework coremedia -framework foundation -framework security -lz -lbz2 -liconv $SCRATCH/x86_64/lib/libdav1d.a $(find $FFMPEG_SCRATCH -name "*.o") -o $SCRATCH/x86_64/lib/libffmpeg
 
     export MPV_SCRATCH="$SCRATCH/x86_64/mpv"
     g++ -dynamiclib -install_name @rpath/libmpv.framework/libmpv -arch x86_64 -all_load -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -g2 -Og $SCRATCH/x86_64/lib/libass.a $SCRATCH/x86_64/lib/libfreetype.a $SCRATCH/x86_64/lib/libharfbuzz.a $SCRATCH/x86_64/lib/libuchardet.a $SCRATCH/x86_64/lib/libffmpeg $SCRATCH/x86_64/lib/libfribidi -framework foundation -framework audiotoolbox -framework coretext -framework avfoundation -framework corevideo -framework opengles -lz -lbz2 -liconv $MPV_SCRATCH/libmpv.a -o $SCRATCH/x86_64/lib/libmpv
@@ -170,7 +177,7 @@ else
     export FFMPEG_SCRATCH="$SCRATCH/arm64/ffmpeg"
     # Duplicate symbols workaround
     rm -f $FFMPEG_SCRATCH/libavfilter/log2_tab.o $FFMPEG_SCRATCH/libavdevice/reverse.o $FFMPEG_SCRATCH/libavformat/log2_tab.o $FFMPEG_SCRATCH/libswscale/log2_tab.o $FFMPEG_SCRATCH/libavcodec/reverse.o $FFMPEG_SCRATCH/libavformat/golomb_tab.o $FFMPEG_SCRATCH/libavcodec/log2_tab.o $FFMPEG_SCRATCH/libswresample/log2_tab.o
-    g++ -dynamiclib -install_name @rpath/libffmpeg.framework/libffmpeg -arch arm64 -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -fembed-bitcode -Os -framework videotoolbox -framework avfoundation -framework corevideo -framework corefoundation -framework audiotoolbox -framework coremedia -framework foundation -framework security -lz -lbz2 -liconv $(find $FFMPEG_SCRATCH -name "*.o") -o $DYLIB/libffmpeg
+    g++ -dynamiclib -install_name @rpath/libffmpeg.framework/libffmpeg -arch arm64 -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -fembed-bitcode -Os -framework videotoolbox -framework avfoundation -framework corevideo -framework corefoundation -framework audiotoolbox -framework coremedia -framework foundation -framework security -lz -lbz2 -liconv $SCRATCH/arm64/lib/libdav1d.a $(find $FFMPEG_SCRATCH -name "*.o") -o $DYLIB/libffmpeg
 
     export MPV_SCRATCH="$SCRATCH/arm64/mpv*"
     g++ -dynamiclib -install_name @rpath/libmpv.framework/libmpv -arch arm64 -all_load -isysroot $SDKPATH -mios-version-min=$DEPLOYMENT_TARGET -fembed-bitcode -Os $LIB/libass.a $LIB/libfreetype.a $LIB/libharfbuzz.a $LIB/libuchardet.a $DYLIB/libffmpeg $DYLIB/libfribidi -framework foundation -framework audiotoolbox -framework coretext -framework avfoundation -framework corevideo -framework opengles -lz -lbz2 -liconv $MPV_SCRATCH/libmpv.a -o $DYLIB/libmpv

@@ -1,0 +1,19 @@
+#!/bin/sh
+set -e
+
+cd $SRC/dav1d*
+
+OPTIONS="--prefix=$SCRATCH/$ARCH --default-library=static"
+
+if [[ "$ARCH" = "arm64" ]]; then
+	OPTIONS="$OPTIONS --cross-file $CROSSFILES/arm64-ios.meson"
+else
+    OPTIONS="$OPTIONS --cross-file $CROSSFILES/x86_64-ios.meson"
+fi
+
+if [[ "$ENVIRONMENT" = "distribution" ]]; then
+	OPTIONS="$OPTIONS -Db_bitcode=true"
+fi
+
+meson $SCRATCH/$ARCH/dav1d $OPTIONS
+ninja -C$SCRATCH/$ARCH/dav1d install
