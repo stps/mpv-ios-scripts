@@ -1,22 +1,14 @@
 # mpv iOS build scripts
 
-These are build scripts for building [libmpv](https://github.com/mpv-player/mpv), and its dependencies:
+This is a macOS shell script for cross-compiling [libmpv](https://github.com/mpv-player/mpv) for iOS (arm64 and x86_64). Includes build scripts for:
 
+* mpv
 * FFmpeg
 * libass
 * freetype
 * harfbuzz
 * fribidi
 * uchardet
-
-Currently used to help build [Outplayer](http://get.outplayer.app) on iOS.
-
-## Configuration
-
-Tested with:
-
-* macOS 10.14.6
-* Xcode 10.3
 
 ## Usage
 
